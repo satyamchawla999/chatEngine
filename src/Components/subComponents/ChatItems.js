@@ -2,6 +2,7 @@
 
 const ChatItems = (props) => {
     const {user,handleOpenChat} = props;
+    console.log(user)
 
     return (
         <div className="chatItemContainer" onClick={()=>handleOpenChat(user)}>

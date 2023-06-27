@@ -18,7 +18,7 @@ const ChatRoom = (props) => {
     const [reciverMessage, serReciverMessage] = useState([]);
 
     const { chats, userId, userDataId } = props
-    console.log("chats", chats)
+    // console.log("chats", chats[0].date.seconds)
     console.log("userId", userId)
     console.log("userDataId", userDataId)
 
@@ -29,21 +29,27 @@ const ChatRoom = (props) => {
                     <p>November 2023</p>
                 </div>
 
-                {chats.map((chat) => (
-                    <div>
-                        {chat.senderId === userDataId ? <>
-                            <div className="rightMessage">
-                                <p>{chat.text}</p>
-                            </div>
-                        </> : <>
+                {chats.map((chat) => {
+                    const date = chat?.date?.seconds ? new Date(chat.date.seconds * 1000) : null;
+                    const formattedTime = date ? date.toLocaleTimeString() : null;
+                    console.log(chat);
 
-                            <div className="leftMessage">
-                                <p>{chat.text}</p>
-                            </div>
-
-                        </>}
-                    </div>
-                ))}
+                    return (
+                        <div key={chat.id}>
+                            {chat.senderId === userDataId ? (
+                                <div className="rightMessage">
+                                    <p>{chat.text}</p>
+                                    {formattedTime && <span>{formattedTime}</span>}
+                                </div>
+                            ) : (
+                                <div className="leftMessage">
+                                    <p>{chat.text}</p>
+                                    {formattedTime && <span>{formattedTime}</span>}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
 
 
 

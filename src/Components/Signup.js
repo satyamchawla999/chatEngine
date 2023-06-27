@@ -74,6 +74,9 @@ const Signup = () => {
                 email: user.email,
             }
 
+            console.log("user",user);
+
+
             await addDoc(collection(db, "Users"), data);
             dispatch(setUserData(data));
             Navigate("/");

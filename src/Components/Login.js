@@ -97,6 +97,10 @@ const Login = () => {
                 email: user.email,
             }
 
+            console.log("data",data)
+            await addDoc(collection(db, "Users"), data);
+
+
             dispatch(setUserData(data));
 
             dispatch(setUser());
