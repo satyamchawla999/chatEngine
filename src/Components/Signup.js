@@ -39,6 +39,7 @@ const Signup = () => {
     const registerWithEmailAndPassword = async () => {
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(res);
             res["displayName"] = name;
             dispatch(setUser(res._tokenResponse));
             Navigate("/");

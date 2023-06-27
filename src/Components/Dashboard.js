@@ -1,12 +1,35 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ChatItems from "./subComponents/ChatItems";
+import { auth } from "../firebase/firebase";
+import {signOut } from "firebase/auth";
+import {deleteUser} from "../Features/User/userSlice"
+import { useAuthState } from "react-firebase-hooks/auth";
+import React, { useEffect } from "react";
+
+
 import "../Assets/Styles/dashboard.scss"
+import { useNavigate } from "react-router-dom";
 
 
 const Dashboard = () => {
 
-    const user = useSelector((state) => state.userData);
+    const userData = useSelector((state) => state.userData);
+    const user = useSelector((state) => state.user);
+
+    const dispatch = useDispatch()
+    const Navigate = useNavigate()
     console.log(user);
+
+
+    useEffect(() => {
+        if (!user) Navigate("/");
+    }, [user]);
+
+    const logout = () => {
+            signOut(auth);
+            dispatch(deleteUser())
+            Navigate("/")
+    };
 
     return (
         <div className="chatPage">
@@ -18,6 +41,7 @@ const Dashboard = () => {
                     <div className="userDetails">
                         <div>
                             <h2>Ralph Hitman</h2>
+                            <p onClick={logout}>Log Out</p>
                             <p><i class="fa-regular fa-bell"></i></p>
                         </div>
 
