@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, googleProvider } from "../firebase/firebase";
+import { auth, googleProvider, db } from "../firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { signInWithPopup, createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { setUser } from "../Features/User/userSlice"
+import { signInWithPopup, createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
+import { setUser,setUserData } from "../Features/User/userSlice"
 import { useDispatch } from "react-redux";
 import "../Assets/Styles/login.css"
+
+import {
+    getFirestore,
+    doc,
+    query,
+    getDocs,
+    collection,
+    where,
+    addDoc,
+    getDoc,
+} from "firebase/firestore";
 
 const Signup = () => {
 
@@ -29,7 +40,22 @@ const Signup = () => {
     const signInWithGoogle = async () => {
         try {
             const res = await signInWithPopup(auth, googleProvider);
-            dispatch(setUser(res._tokenResponse));
+            const user = res.user;
+
+            const q = query(collection(db, "Users"), where("uid", "==", user.uid));
+            const docs = await getDocs(q);
+
+            const data = {
+                uid: user.uid,
+                name: user.displayName,
+                email: user.email,
+            }
+
+            if (docs.docs.length === 0) {
+                await addDoc(collection(db, "Users"),data);
+            }
+            dispatch(setUser());
+            dispatch(setUserData(data));
             Navigate("/dashboard");
         } catch (err) {
             console.error(err);
@@ -39,9 +65,17 @@ const Signup = () => {
     const registerWithEmailAndPassword = async () => {
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(res);
-            res["displayName"] = name;
-            dispatch(setUser(res._tokenResponse));
+            updateProfile(res.user,{displayName:name}).then((x)=>console.log("success")).catch((err)=>console.log(err));
+            const user = res.user;
+
+            const data = {
+                uid: user.uid,
+                name: user.displayName,
+                email: user.email,
+            }
+
+            await addDoc(collection(db, "Users"), data);
+            dispatch(setUserData(data));
             Navigate("/");
         } catch (err) {
             console.error(err);

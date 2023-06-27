@@ -1,10 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
-import ChatItems from "./subComponents/ChatItems";
-import { auth } from "../firebase/firebase";
-import {signOut } from "firebase/auth";
-import {deleteUser} from "../Features/User/userSlice"
+import { ChatItems, OpenChat } from "./subComponents";
+import { auth, db } from "../firebase/firebase";
+import { signOut } from "firebase/auth";
+import { deleteUser } from "../Features/User/userSlice"
 import { useAuthState } from "react-firebase-hooks/auth";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
+import {
+    getFirestore,
+    doc,
+    query,
+    getDocs,
+    collection,
+    where,
+    addDoc,
+    getDoc,
+} from "firebase/firestore";
 
 
 import "../Assets/Styles/dashboard.scss"
@@ -18,18 +29,48 @@ const Dashboard = () => {
 
     const dispatch = useDispatch()
     const Navigate = useNavigate()
-    console.log(user);
 
+    const [users, setUsers] = useState([]);
+    const [chat, setChat] = useState();
 
     useEffect(() => {
-        if (!user) Navigate("/");
+        if (user === false) Navigate("/");
+        const getUsers = async () => {
+            const data = query(collection(db, "Users"));
+            const mySnapshot = await getDocs(data);
+            const usersData = []
+            mySnapshot.forEach((doc) => (usersData.push(doc.data())));
+            setUsers(usersData);
+        }
+        getUsers();
     }, [user]);
 
     const logout = () => {
-            signOut(auth);
-            dispatch(deleteUser())
-            Navigate("/")
+        signOut(auth);
+        dispatch(deleteUser())
+        Navigate("/")
     };
+
+    const handleOpenChat = async (user) => {
+        console.log(user.uid);
+        console.log(userData.uid);
+
+        const chatId = user.uid > userData.uid ? userData.uid + user.uid : user.uid + userData.uid;
+
+        const q = query(collection(db, "ChatRoom"), where("chatId", "==", chatId));
+        const docs = await getDocs(q);
+
+        const data = {
+            chatId: chatId,
+            chats:[]
+        }
+
+        if (docs.docs.length === 0) {
+            await addDoc(collection(db, "ChatRoom"), data);
+        }
+
+        setChat(user)
+    }
 
     return (
         <div className="chatPage">
@@ -40,12 +81,12 @@ const Dashboard = () => {
                     <img src="https://cdn.iconscout.com/icon/free/png-512/free-avatar-375-456327.png?f=avif&w=256" alt="userImg" />
                     <div className="userDetails">
                         <div>
-                            <h2>Ralph Hitman</h2>
+                            <h2>{userData.name}</h2>
                             <p onClick={logout}>Log Out</p>
                             <p><i class="fa-regular fa-bell"></i></p>
                         </div>
 
-                        <p>@Ralph-Hitman</p>
+                        <p>@{userData.name}-{userData.lastName}</p>
                     </div>
                 </div>
 
@@ -56,41 +97,22 @@ const Dashboard = () => {
                     </div>
 
                     <div className="chatsContainer">
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
-                        <ChatItems />
+
+                        {users.map((user) => ((user.uid !== userData.uid &&
+                            <ChatItems
+                                key={user.uid}
+                                user={user}
+                                handleOpenChat={handleOpenChat}
+                            />)))}
+
                     </div>
 
                 </div>
 
             </div>
 
-            <div className="openChat">
-                <div className="headBar">
-                    <div className="senderInfo">
-                        <img src="https://cdn.iconscout.com/icon/free/png-512/free-avatar-375-456327.png?f=avif&w=256" alt="userImg" />
-                        <h2>Ram Kumar</h2>
-                        <div className="headSpace">
+            {chat && <OpenChat user={chat} />}
 
-                        </div>
-                        <p><i class="fa-solid fa-phone"></i></p>
-                        <p><i class="fa-solid fa-laptop-file"></i></p>
-                        <p><i class="fa-solid fa-ellipsis"></i></p>
-                    </div>
-                </div>
-
-                <div className="textBar">
-                    <i class="fa-solid fa-paperclip"></i>
-                    <input type="text" placeholder="Type a message." />
-                    <i class="fa-regular fa-face-smile"></i>
-                    <p><img src={require("../Assets/Images/send-message.png")} /></p>
-                </div>
-            </div>
 
         </div>
     );

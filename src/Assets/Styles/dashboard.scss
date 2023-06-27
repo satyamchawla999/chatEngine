@@ -206,7 +206,12 @@ p {
                 justify-content: space-between;
 
                 .headSpace {
-                    width: 70%;
+                    display: flex;
+                }
+
+                .openChatImg {
+                    display: flex;
+                    align-items: center;
                 }
 
                 img {
@@ -226,6 +231,63 @@ p {
                     justify-content: center;
                     color: #2680EB;
                     margin: 5px;
+                }
+            }
+        }
+
+        .chatRoom {
+            margin-top: 25px;
+            width: 100%;
+            height: 65vh;
+            overflow-y: scroll;
+
+            .chatRoomDate {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                p{
+                    font-size: 13px;
+                    color: rgb(190, 182, 182);
+                }
+            }
+
+            .leftMessage {
+                width: 100%;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-bottom: 10px;
+
+                p {
+                    color: white;
+                    background-color: #c2c9f3;
+                    height: 50px;
+                    padding: 10px;
+                    display: flex;
+                    align-items: center;
+                    border-radius: 20px;
+                }
+            }
+
+            .rightMessage{
+                width: 100%;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                margin-bottom: 10px;
+                
+                p {
+                    color: white;
+                    background-color: #2680EB;
+                    height: 50px;
+                    padding: 10px;
+                    display: flex;
+                    align-items: center;
+                    border-radius: 20px;
                 }
             }
         }
