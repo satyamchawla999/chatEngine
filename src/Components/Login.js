@@ -98,7 +98,7 @@ const Login = () => {
             }
 
             console.log("data",data)
-            await addDoc(collection(db, "Users"), data);
+            // await addDoc(collection(db, "Users"), data);
 
 
             dispatch(setUserData(data));

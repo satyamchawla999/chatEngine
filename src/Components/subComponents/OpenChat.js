@@ -26,7 +26,12 @@ const OpenChat = (props) => {
             const q = query(collection(db, "ChatRoom"),where("chatId","==",chatId));
             const chats = await getDocs(q);
             
-            chats.forEach((chat)=>(setChats(chat.data().chats)));
+            chats.forEach((chat)=>{
+                setChats(chat.data().chats);
+                let status = chat.status ;
+                status = true;
+                chat.status = status;
+            });
         }
         getChats();
     },[user,message])
