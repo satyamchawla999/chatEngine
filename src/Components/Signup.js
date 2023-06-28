@@ -15,6 +15,7 @@ import {
     collection,
     where,
     addDoc,
+    updateDoc,
     getDoc,
 } from "firebase/firestore";
 
@@ -49,15 +50,24 @@ const Signup = () => {
                 uid: user.uid,
                 name: user.displayName,
                 email: user.email,
+                online: true
             }
 
             if (docs.docs.length === 0) {
                 await addDoc(collection(db, "Users"),data);
+            } 
+            else {
+                docs.forEach((doc)=>{
+                    const docRef = doc.ref;
+                    updateDoc(docRef, { online: true });
+                })
             }
+
             dispatch(setUser());
             dispatch(setUserData(data));
             Navigate("/dashboard");
         } catch (err) {
+            alert(err);
             console.error(err);
         }
     };
@@ -70,8 +80,9 @@ const Signup = () => {
 
             const data = {
                 uid: user.uid,
-                name: user.displayName,
+                name: name,
                 email: user.email,
+                online: true
             }
 
             console.log("user",user);

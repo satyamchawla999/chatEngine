@@ -14,6 +14,7 @@ import {
     collection,
     where,
     addDoc,
+    updateDoc,
     getDoc,
 } from "firebase/firestore";
 
@@ -50,11 +51,18 @@ const Login = () => {
                 uid: user.uid,
                 name: user.displayName,
                 email: user.email,
+                online:true
             }
 
             if (docs.docs.length === 0) {
                 await addDoc(collection(db, "Users"),data);
+            } else {
+                docs.forEach((doc)=>{
+                    const docRef = doc.ref;
+                    updateDoc(docRef, { online: true });
+                })
             }
+
             dispatch(setUser());
             dispatch(setUserData(data));
             Navigate("/dashboard");
@@ -73,32 +81,28 @@ const Login = () => {
     const logInWithEmailAndPassword = async () => {
         try {
 
-            
             const res = await signInWithEmailAndPassword(auth, email, password);
             const user= res.user;
-            // const user = res.user;
+            
+            const q = query(collection(db, "Users"), where("uid", "==", user.uid));
+            const docs = await getDocs(q);
 
-            // const q = query(collection(db, "Users"), where("uid", "==", user.uid));
-            // const docs = await getDocs(q);
-
-            // const data = {
-            //     uid: user.uid,
-            //     email: user.email,
-            // }
-
-            // if (docs.docs.length === 0) {
-            //     await addDoc(collection(db, "Users"),data);
-            // }
-
-            // await addDoc(collection(db, "Users"), data);
             const data = {
                 uid: user.uid,
                 name: user.displayName,
                 email: user.email,
+                online: true
             }
 
-            console.log("data",data)
-            // await addDoc(collection(db, "Users"), data);
+            if (docs.docs.length === 0) {
+                await addDoc(collection(db, "Users"),data);
+            } 
+            else {
+                docs.forEach((doc)=>{
+                    const docRef = doc.ref;
+                    updateDoc(docRef, { online: true });
+                })
+            }
 
 
             dispatch(setUserData(data));

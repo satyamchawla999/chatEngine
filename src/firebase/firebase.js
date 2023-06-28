@@ -23,13 +23,13 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyALzExCq6nIKydiE74Wvhhm6iV2AHkTYaA",
-    authDomain: "sign-in-project-391005.firebaseapp.com",
-    projectId: "sign-in-project-391005",
-    storageBucket: "sign-in-project-391005.appspot.com",
-    messagingSenderId: "745525634334",
-    appId: "1:745525634334:web:dd87670f721dbed13a950f"
-};
+    apiKey: "AIzaSyAh2x7-KBkiv9q1bo5l0XVRCpu1tpNBmqA",
+    authDomain: "sign-in-project-f4027.firebaseapp.com",
+    projectId: "sign-in-project-f4027",
+    storageBucket: "sign-in-project-f4027.appspot.com",
+    messagingSenderId: "142366319185",
+    appId: "1:142366319185:web:fb2645f5d5a6ced6de4e70"
+  };
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

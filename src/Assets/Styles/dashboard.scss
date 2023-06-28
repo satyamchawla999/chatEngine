@@ -125,10 +125,25 @@ p {
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        position: relative;
 
                         img {
                             width: 70px;
                             height: 70px;
+                        }
+
+                        .online {
+                            position: absolute;
+                            bottom: 10px;
+                            right: 6px;
+                            color: red;
+                            background-color: red;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 15px;
+                            width: 15px;
+                            border-radius: 50%;
                         }
                     }
 
@@ -212,6 +227,21 @@ p {
                 .openChatImg {
                     display: flex;
                     align-items: center;
+                    position: relative;
+
+                    p{
+                        position: absolute;
+                        top: 35px;
+                        left:40px;
+                        height: 15px;
+                        width: 15px;
+                        color:red;
+                        background-color: red;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 50%;
+                    }
                 }
 
                 img {
