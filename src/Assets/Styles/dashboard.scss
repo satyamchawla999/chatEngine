@@ -262,6 +262,20 @@ p {
                     color: #2680EB;
                     margin: 5px;
                 }
+
+                .additionalInfo {
+                    height: 40%;
+                    width: 100%;
+                    padding: 0px 20px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                p {
+                    cursor: pointer;
+                }
             }
         }
 
