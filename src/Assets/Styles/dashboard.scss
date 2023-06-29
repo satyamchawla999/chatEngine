@@ -263,18 +263,29 @@ p {
                     margin: 5px;
                 }
 
-                .additionalInfo {
-                    height: 40%;
-                    width: 100%;
-                    padding: 0px 20px;
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: space-between;
+                
+
+                
+            }
+
+            .additionalInfo {
+                height: 40%;
+                width: 100%;
+                padding: 0px 20px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                color: #2680EB;
+
+                .typing {
+                    text-align: left;
                 }
 
-                p {
+                .clear {
+                    width: 50%;
                     cursor: pointer;
+                    text-align: right;
                 }
             }
         }
@@ -287,14 +298,11 @@ p {
 
             .chatRoomDate {
                 width: 100%;
+                color: rgb(190, 182, 182);
+                font-size: 13px;
                 display: flex;
                 justify-content: center;
-                align-items: center;
-
-                p{
-                    font-size: 13px;
-                    color: rgb(190, 182, 182);
-                }
+                align-items: center; 
             }
 
             .leftMessage {
@@ -394,6 +402,14 @@ p {
 
             input:focus {
                 outline: none;
+            }
+
+            i {
+                cursor: pointer;
+            }
+
+            button {
+                cursor: pointer;
             }
         }
     }

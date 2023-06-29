@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import React from "react";
 import { ChatRoom } from "../subComponents";
 import { UseSelector, useSelector } from "react-redux/es/hooks/useSelector";
 
@@ -12,35 +13,42 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
-const OpenChat = (props) => {
+const OpenChat = React.memo((props) => {
   const { user, currentUser } = props;
   const userData = useSelector((state) => state.userData);
   const name = user?.name;
 
-  const [message, setMessage] = useState("");
+  const textBox = useRef(null);
+
+  const [send, setSend] = useState({});
   const [typing, setTyping] = useState(false);
+  let updateTyping = false;
 
   const [chats, setChats] = useState([]);
 
-  let chatData = [];
   useEffect(() => {
     const getChats = async () => {
       const chatId =
         user.uid > userData.uid
           ? userData.uid + user.uid
           : user.uid + userData.uid;
+
       const q = query(
         collection(db, "ChatRoom"),
         where("chatId", "==", chatId)
       );
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
+        const updatedChats = []
         snapshot.forEach((doc) => {
+
           const chats = doc.data().chats;
           const cd = userData.uid;
 
           setTyping(doc.data()[cd]);
           console.log(cd, doc.data()[cd]);
-          const updatedChats = chats.map((chat) => {
+
+          const updatedChat = chats.map((chat) => {
             if (chat.reciverId === userData.uid) {
               return {
                 ...chat,
@@ -50,11 +58,12 @@ const OpenChat = (props) => {
             return chat;
           });
 
+          updatedChats.push(...updatedChat);
           const docRef = doc.ref;
-          updateDoc(docRef, { chats: updatedChats });
+          updateDoc(docRef, { chats: updatedChat });
+
         });
 
-        const updatedChats = snapshot.docs.flatMap((doc) => doc.data().chats);
         setChats(updatedChats);
       });
 
@@ -62,14 +71,16 @@ const OpenChat = (props) => {
     };
 
     getChats();
-  }, [user, message]);
+  }, [user, send]);
 
-  console.log(chatData);
+
+
 
   const handleMessage = (e) => {
+
     e.preventDefault();
 
-    if (message == "") {
+    if (textBox.current.value == "") {
       alert("empty");
       return;
     }
@@ -83,7 +94,7 @@ const OpenChat = (props) => {
     console.log(date);
 
     const data = {
-      text: message,
+      text: textBox.current.value,
       status: false,
       senderId: userData.uid,
       reciverId: user.uid,
@@ -91,6 +102,8 @@ const OpenChat = (props) => {
       chatId: chatId,
       date: date,
     };
+
+    setSend(data);
 
     const getChat = async () => {
       const chatRoomRef = collection(db, "ChatRoom");
@@ -107,27 +120,36 @@ const OpenChat = (props) => {
     };
 
     getChat();
+    e.target.textBox.value = "";
 
-    setMessage("");
   };
+
+
+
+
   let t;
   const handleChange = async (e) => {
     clearTimeout(t);
 
-    setMessage(e.target.value);
+    // setMessage(e.target.value);
     const chatId =
       user.uid > userData.uid
         ? userData.uid + user.uid
         : user.uid + userData.uid;
 
     const q = query(collection(db, "ChatRoom"), where("chatId", "==", chatId));
-    const docs = await getDocs(q);
-    docs.forEach((doc) => {
-      const obj = {};
-      obj[user.uid] = true;
-      const docRef = doc.ref;
-      updateDoc(docRef, obj);
-    });
+    let docs = await getDocs(q);
+    if (updateTyping === false) {
+      docs.forEach((doc) => {
+        const obj = {};
+        obj[user.uid] = true;
+        const docRef = doc.ref;
+        updateDoc(docRef, obj);
+      });
+      console.log("updateTyping")
+      updateTyping = true;
+    }
+
 
     t = setTimeout(() => {
       docs.forEach((doc) => {
@@ -136,10 +158,12 @@ const OpenChat = (props) => {
         const docRef = doc.ref;
         updateDoc(docRef, obj);
       });
+      updateTyping = false;
+      console.log("updateTypingFalse")
     }, 5000);
   };
 
-  const handleClear = async ()=> {
+  const handleClear = async () => {
     const chatId =
       user.uid > userData.uid
         ? userData.uid + user.uid
@@ -150,9 +174,8 @@ const OpenChat = (props) => {
     docs.forEach((doc) => {
       const arr = [];
       const docRef = doc.ref;
-      updateDoc(docRef, {chats:arr});
+      updateDoc(docRef, { chats: arr });
     });
-    setMessage("");
   }
 
   return (
@@ -190,8 +213,8 @@ const OpenChat = (props) => {
           </div>
         </div>
         <div className="additionalInfo">
-          {typing === true && <p>Typing...</p>}
-          <p onClick={handleClear}>Clear Conversation</p>
+          <p className="typing">{typing === true && <>Typing...</>}</p>
+          <p className="clear" onClick={handleClear}>Clear Conversation</p>
         </div>
       </div>
 
@@ -209,7 +232,9 @@ const OpenChat = (props) => {
           <input
             type="text"
             placeholder="Type a message."
-            value={message}
+            name="textBox"
+            ref={textBox}
+            // value={textBox.current.value}
             onChange={handleChange}
           />
           <i
@@ -232,6 +257,6 @@ const OpenChat = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default OpenChat;

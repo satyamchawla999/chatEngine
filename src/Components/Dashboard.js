@@ -49,18 +49,18 @@ const Dashboard = () => {
                     usersD.push(doc.data())
                 });
                 setUsers(usersD);
-                usersD=[];
+                usersD = [];
             })
             return () => unsubscribe();
         }
         getUsers();
-    }, [user]);
+    }, []);
 
     const logout = async () => {
         const q = query(collection(db, "Users"), where("uid", "==", userData.uid));
         const docs = await getDocs(q);
 
-        docs.forEach((doc)=>{
+        docs.forEach((doc) => {
             const docRef = doc.ref;
             updateDoc(docRef, { online: false });
         })
@@ -72,7 +72,7 @@ const Dashboard = () => {
 
         // const unsubscribe = onSnapshot(q, (snapshot) => {
         //     // snapshot.forEach((doc) => {
-                
+
         //     // })
         //     const docRef = doc.ref;
         //     updateDoc(docRef, { online: false });
@@ -89,7 +89,7 @@ const Dashboard = () => {
         console.log(userData.uid);
 
         const chatId = user.uid > userData.uid ? userData.uid + user.uid : user.uid + userData.uid;
-    
+
         const q = query(collection(db, "ChatRoom"), where("chatId", "==", chatId));
         const docs = await getDocs(q);
 
@@ -147,7 +147,7 @@ const Dashboard = () => {
 
             </div>
 
-            {chat && <OpenChat user={chat} currentUser = {userData} />}
+            {chat && <OpenChat user={chat} currentUser={userData} />}
 
 
         </div>
